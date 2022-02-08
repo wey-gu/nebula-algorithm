@@ -9,9 +9,12 @@ import com.vesoft.nebula.algorithm.config.Configs.Argument
 import com.vesoft.nebula.algorithm.config.{
   AlgoConfig,
   BetweennessConfig,
+  BfsConfig,
   CcConfig,
+  CoefficientConfig,
   Configs,
   HanpConfig,
+  JaccardConfig,
   KCoreConfig,
   LPAConfig,
   LouvainConfig,
@@ -22,11 +25,14 @@ import com.vesoft.nebula.algorithm.config.{
 }
 import com.vesoft.nebula.algorithm.lib.{
   BetweennessCentralityAlgo,
+  BfsAlgo,
   ClosenessAlgo,
+  ClusteringCoefficientAlgo,
   ConnectedComponentsAlgo,
   DegreeStaticAlgo,
   GraphTriangleCountAlgo,
   HanpAlgo,
+  JaccardAlgo,
   KCoreAlgo,
   LabelPropagationAlgo,
   LouvainAlgo,
@@ -73,14 +79,25 @@ object Main {
     val sparkConfig  = SparkConfig.getSpark(configs)
     val partitionNum = sparkConfig.partitionNum
 
+    val startTime = System.currentTimeMillis()
     // reader
-    val dataSet = createDataSource(sparkConfig.spark, configs, partitionNum)
+    val dataSet  = createDataSource(sparkConfig.spark, configs, partitionNum)
+    val readTime = System.currentTimeMillis()
 
     // algorithm
     val algoResult = executeAlgorithm(sparkConfig.spark, algoName, configs, dataSet)
+    val algoTime   = System.currentTimeMillis()
+
     // writer
     saveAlgoResult(algoResult, configs)
+    val endTime = System.currentTimeMillis()
 
+    sparkConfig.spark.stop()
+    val readDuration  = ((readTime - startTime) / 1000.0).formatted("%.4f")
+    val algoDuration  = ((algoTime - readTime) / 1000.0).formatted("%.4f")
+    val writeDuration = ((endTime - algoTime) / 1000.0).formatted("%.4f")
+    LOGGER.info(
+      s"read data source cost: $readDuration s, algo cost: $algoDuration s, write algo result cost: $writeDuration s")
     sys.exit(0)
   }
 
@@ -168,6 +185,10 @@ object Main {
         case "graphtrianglecount" => {
           GraphTriangleCountAlgo(spark, dataSet)
         }
+        case "clusteringcoefficient" => {
+          val coefficientConfig = CoefficientConfig.getCoefficientConfig(configs)
+          ClusteringCoefficientAlgo(spark, dataSet, coefficientConfig)
+        }
         case "closeness" => {
           ClosenessAlgo(spark, dataSet, hasWeight)
         }
@@ -178,6 +199,14 @@ object Main {
         case "node2vec" => {
           val node2vecConfig = Node2vecConfig.getNode2vecConfig(configs)
           Node2vecAlgo(spark, dataSet, node2vecConfig, hasWeight)
+        }
+        case "bfs" => {
+          val bfsConfig = BfsConfig.getBfsConfig(configs)
+          BfsAlgo(spark, dataSet, bfsConfig)
+        }
+        case "jaccard" => {
+          val jaccardConfig = JaccardConfig.getJaccardConfig(configs)
+          JaccardAlgo(spark, dataSet, jaccardConfig)
         }
         case _ => throw new UnknownParameterException("unknown executeAlgo name.")
       }

@@ -150,6 +150,40 @@ object BetweennessConfig {
 }
 
 /**
+  * ClusterCoefficient
+  * algoType has two options: local or global
+  */
+case class CoefficientConfig(algoType: String)
+
+object CoefficientConfig {
+  var algoType: String = _
+
+  def getCoefficientConfig(configs: Configs): CoefficientConfig = {
+    val coefficientConfig = configs.algorithmConfig.map
+    algoType = coefficientConfig("algorithm.clusteringcoefficient.type")
+    assert(algoType.equalsIgnoreCase("local") || algoType.equalsIgnoreCase("global"),
+           "ClusteringCoefficient only support local or global type.")
+    CoefficientConfig(algoType)
+  }
+}
+
+/**
+  * bfs
+  */
+case class BfsConfig(maxIter: Int, root: Long)
+object BfsConfig {
+  var maxIter: Int = _
+  var root: Long   = _
+
+  def getBfsConfig(configs: Configs): BfsConfig = {
+    val bfsConfig = configs.algorithmConfig.map
+    maxIter = bfsConfig("algorithm.bfs.maxIter").toInt
+    root = bfsConfig("algorithm.bfs.root").toLong
+    BfsConfig(maxIter, root)
+  }
+}
+
+/**
   * Hanp
   */
 case class HanpConfig(hopAttenuation: Double, maxIter: Int, preference: Double)
@@ -229,6 +263,20 @@ object Node2vecConfig {
                    degree,
                    embSeparate,
                    modelPath)
+  }
+}
+
+/**
+  * Jaccard
+  */
+case class JaccardConfig(tol: Double)
+
+object JaccardConfig {
+  var tol: Double = _
+  def getJaccardConfig(configs: Configs): JaccardConfig = {
+    val jaccardConfig = configs.algorithmConfig.map
+    tol = jaccardConfig("algorithm.jaccard.tol").toDouble
+    JaccardConfig(tol)
   }
 }
 

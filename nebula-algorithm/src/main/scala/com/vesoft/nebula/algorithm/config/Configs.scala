@@ -99,8 +99,15 @@ object NebulaConfigEntry {
     val pswd             = nebulaConfig.getString("write.pswd")
     val writeSpace       = nebulaConfig.getString("write.space")
     val writeTag         = nebulaConfig.getString("write.tag")
+    val writeType        = nebulaConfig.getString("write.type")
     val writeConfigEntry =
-      NebulaWriteConfigEntry(graphAddress, writeMetaAddress, user, pswd, writeSpace, writeTag)
+      NebulaWriteConfigEntry(graphAddress,
+                             writeMetaAddress,
+                             user,
+                             pswd,
+                             writeSpace,
+                             writeTag,
+                             writeType)
     NebulaConfigEntry(readConfigEntry, writeConfigEntry)
   }
 }
@@ -209,10 +216,11 @@ case class NebulaWriteConfigEntry(graphAddress: String = "",
                                   user: String = "",
                                   pswd: String = "",
                                   space: String = "",
-                                  tag: String = "") {
+                                  tag: String = "",
+                                  writeType: String = "insert") {
   override def toString: String = {
     s"NebulaWriteConfigEntry: " +
-      s"{graphAddress: $graphAddress, user: $user, password: $pswd, space: $space, tag: $tag}"
+      s"{graphAddress: $graphAddress, user: $user, password: $pswd, space: $space, tag: $tag, type: $writeType}"
   }
 }
 
@@ -348,20 +356,22 @@ object Configs {
 }
 
 object AlgoConstants {
-  val ALGO_ID_COL: String              = "_id"
-  val PAGERANK_RESULT_COL: String      = "pagerank"
-  val LOUVAIN_RESULT_COL: String       = "louvain"
-  val KCORE_RESULT_COL: String         = "kcore"
-  val LPA_RESULT_COL: String           = "lpa"
-  val CC_RESULT_COL: String            = "cc"
-  val SCC_RESULT_COL: String           = "scc"
-  val BETWEENNESS_RESULT_COL: String   = "betweennedss"
-  val SHORTPATH_RESULT_COL: String     = "shortestpath"
-  val DEGREE_RESULT_COL: String        = "degree"
-  val INDEGREE_RESULT_COL: String      = "inDegree"
-  val OUTDEGREE_RESULT_COL: String     = "outDegree"
-  val TRIANGLECOUNT_RESULT_COL: String = "tranglecount"
-  val CLOSENESS_RESULT_COL: String     = "closeness"
-  val HANP_RESULT_COL: String          = "hanp"
-  val NODE2VEC_RESULT_COL: String      = "node2vec"
+  val ALGO_ID_COL: String                   = "_id"
+  val PAGERANK_RESULT_COL: String           = "pagerank"
+  val LOUVAIN_RESULT_COL: String            = "louvain"
+  val KCORE_RESULT_COL: String              = "kcore"
+  val LPA_RESULT_COL: String                = "lpa"
+  val CC_RESULT_COL: String                 = "cc"
+  val SCC_RESULT_COL: String                = "scc"
+  val BETWEENNESS_RESULT_COL: String        = "betweenness"
+  val SHORTPATH_RESULT_COL: String          = "shortestpath"
+  val DEGREE_RESULT_COL: String             = "degree"
+  val INDEGREE_RESULT_COL: String           = "inDegree"
+  val OUTDEGREE_RESULT_COL: String          = "outDegree"
+  val TRIANGLECOUNT_RESULT_COL: String      = "trianglecount"
+  val CLUSTERCOEFFICIENT_RESULT_COL: String = "clustercoefficient"
+  val CLOSENESS_RESULT_COL: String          = "closeness"
+  val HANP_RESULT_COL: String               = "hanp"
+  val NODE2VEC_RESULT_COL: String           = "node2vec"
+  val BFS_RESULT_COL: String                = "bfs"
 }
